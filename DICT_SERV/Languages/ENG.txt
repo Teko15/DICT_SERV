@@ -1,0 +1,6 @@
+dom	house, home
+kot	cat
+miasto	city, town
+noc	night
+deszcz	rain
+slowo	word

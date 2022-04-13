@@ -1,0 +1,6 @@
+dom	Ev
+kot	Kedi
+miasto	Kent
+noc	Gece
+deszcz	Yağmur
+slowo	Kelime
