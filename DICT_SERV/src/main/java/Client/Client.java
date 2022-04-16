@@ -1,38 +1,39 @@
-package zad03.dict_serv;
+package Client;
 
+import _Misc.ProxyInfo;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class Client extends Application {
+    final static int PROXY_PORT = 1234;
 
     @Override
     public void start(Stage stage) {
     }
 
     public static void main(String[] args) throws IOException {
+        if (args.length != 1)
+            System.exit(13);
+        int port = Integer.parseInt(args[0]);
+        ProxyInfo proxyInfo = ProxyInfo.Client;
+        String tmpWord = "kot";
 
-        Socket clientSocket = new Socket("192.168.0.129", 1);
-        //BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        PrintWriter outToServer = new PrintWriter(clientSocket.getOutputStream(), true);
-        String clientPort = String.valueOf(clientSocket.getLocalPort());
-        String[] toServer = new String[]{"dom", "sin", clientPort};
+        ServerSocket serverSocket = new ServerSocket(port);
+        Socket clientSocket = new Socket("localhost", PROXY_PORT);
+        PrintWriter toProxyServer = new PrintWriter(clientSocket.getOutputStream(), true);
 
+        String toSend = proxyInfo + "," + port + "," + tmpWord + ",TUR";
+        System.out.println(toSend);
+        toProxyServer.println(toSend);
 
-        outToServer.println(Arrays.toString(toServer));
-
-        clientSocket.close();
-
-     //   ServerSocket serverSocket = new ServerSocket();
-
-      //  ExecutorService threadPool = Executors.newFixedThreadPool(3);
-        /*while (true) {
-            threadPool.submit(new TCPHandler(serverSocket.accept()));
-        }*/
+        Socket fromProxySocket = serverSocket.accept();
+        new Thread(new ClientHandler(fromProxySocket)).start();
+        //launch
     }
 }
 

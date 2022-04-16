@@ -1,19 +1,46 @@
 package LangServer;
 
+import _Misc.ProxyInfo;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LangServer {
+    final static int PROXY_PORT = 1234;
 
     private static Map<String, String> dictionary = new HashMap<>();
 
-    public static void main(String[] args) {
+    public static Map<String, String> getDictionary() {
+        return dictionary;
+    }
+
+    public static void setDictionary(Map<String, String> dictionary) {
+        LangServer.dictionary = dictionary;
+    }
+
+    public static void main(String[] args) throws IOException {
         if (args.length != 2)
             System.exit(13);
         int port = Integer.parseInt(args[0]);
         String langCode = args[1];
+        ProxyInfo proxyInfo = ProxyInfo.LangServer;
+
+
         addToMapDictionary(langCode);
-        System.out.println(dictionary.get("dom"));
+        setDictionary(dictionary);
+        Socket toProxySocket = new Socket("localhost", PROXY_PORT);
+        PrintWriter toProxyServer = new PrintWriter(toProxySocket.getOutputStream(), true);
+        String toSend = proxyInfo + "," + port + "," + langCode;
+        System.out.println(toSend);
+        toProxyServer.println(toSend);
+
+        ServerSocket serverSocket = new ServerSocket(port);
+        Socket toClientSocket = serverSocket.accept();
+        new Thread(new LangServerHandler(toClientSocket)).start();
     }
 
     private static void addToMapDictionary(String langCode) {

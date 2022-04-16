@@ -3,30 +3,22 @@ package Proxy;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Server {
+public class Proxy {
+    final static int PROXY_PORT = 1234;
+    static Map<String, Integer> langServerCodeAndPort = new HashMap<>();
+
     public static void main(String[] args) throws IOException {
-        int port = 1234;
-        ServerSocket serverSocket = new ServerSocket(port);
-        ExecutorService threadPool = Executors.newCachedThreadPool();
-        Socket cli = serverSocket.accept();
-        new Thread(new ProxyHandler(cli)).start();
-        //threadPool.submit(new ProxyHandler(serverSocket.accept()));
-        System.out.println("End of Server");
+        ServerSocket serverSocket = new ServerSocket(PROXY_PORT);
+        ExecutorService executorService = Executors.newFixedThreadPool(Integer.MAX_VALUE);
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            executorService.execute(new ProxyHandler(clientSocket));
+        }
     }
 }
-
-/*
-    public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket1 = new ServerSocket(10);
-        Socket clientSocket = new Socket("192.168.0.129", 10);
-
-        ServerSocket serverSocket = new ServerSocket(1);
-        ExecutorService threadPool = Executors.newCachedThreadPool();
-
-            threadPool.submit(new TCPHandler(serverSocket.accept(), 2));
-
-    }
- */

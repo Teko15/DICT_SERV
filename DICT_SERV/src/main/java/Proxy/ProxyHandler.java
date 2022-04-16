@@ -2,17 +2,14 @@ package Proxy;
 
 import _Misc.ProxyInfo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProxyHandler implements Runnable {
     Socket fromClientSocket;
-    Map<String, Integer> langServerCodeAndPort = new HashMap<>();
+
 
     public ProxyHandler(Socket fromClientSocket) {
         this.fromClientSocket = fromClientSocket;
@@ -48,13 +45,13 @@ public class ProxyHandler implements Runnable {
     //1331,dom,ENG
     private void clientService(int clientPort, String data, String langCode) throws IOException {
         System.out.println("Greetings mr. client!");
-        System.out.println(langServerCodeAndPort);
-        if (langServerCodeAndPort.get(langCode) == null) {
+        System.out.println(Proxy.langServerCodeAndPort);
+        if (Proxy.langServerCodeAndPort.get(langCode) == null) {
             Socket toClientSocket = new Socket("localhost", clientPort);
             PrintWriter toProxyServer = new PrintWriter(toClientSocket.getOutputStream(), true);
             toProxyServer.println("Invalid server (" + langCode + ")");
         } else {
-            Socket toLangServerSocket = new Socket("localhost", langServerCodeAndPort.get(langCode));
+            Socket toLangServerSocket = new Socket("localhost", Proxy.langServerCodeAndPort.get(langCode));
             PrintWriter toLangServer = new PrintWriter(toLangServerSocket.getOutputStream(), true);
             //dom,1331
             toLangServer.println(data + "," + clientPort);
@@ -62,7 +59,7 @@ public class ProxyHandler implements Runnable {
     }
 
     private void langServerService(int langServerPort, String langCode) {
-        System.out.println("Greetings mr. server!");
-        langServerCodeAndPort.put(langCode, langServerPort);
+        System.out.println("Greetings mr. server " + langCode + "!");
+        Proxy.langServerCodeAndPort.put(langCode, langServerPort);
     }
 }
