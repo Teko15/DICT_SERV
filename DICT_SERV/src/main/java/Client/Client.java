@@ -1,5 +1,6 @@
 package Client;
 
+import _Misc.ImportantData;
 import _Misc.ProxyInfo;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -10,21 +11,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Client extends Application {
-    final static int PROXY_PORT = 1234;
 
     @Override
     public void start(Stage stage) {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 1)
-            System.exit(13);
-        int port = Integer.parseInt(args[0]);
-        ProxyInfo proxyInfo = ProxyInfo.Client;
+        /* */
+        int port = 12;
         String tmpWord = "kot";
 
+        ProxyInfo proxyInfo = ProxyInfo.Client;
+
         ServerSocket serverSocket = new ServerSocket(port);
-        Socket clientSocket = new Socket("localhost", PROXY_PORT);
+        Socket clientSocket = new Socket("localhost", ImportantData.PROXY_PORT);
         PrintWriter toProxyServer = new PrintWriter(clientSocket.getOutputStream(), true);
 
         String toSend = proxyInfo + "," + port + "," + tmpWord + ",TUR";

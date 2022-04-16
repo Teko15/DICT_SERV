@@ -4,12 +4,9 @@ import _Misc.ProxyInfo;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ProxyHandler implements Runnable {
     Socket fromClientSocket;
-
 
     public ProxyHandler(Socket fromClientSocket) {
         this.fromClientSocket = fromClientSocket;
@@ -17,7 +14,7 @@ public class ProxyHandler implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+      //  while (true) {
             try {
                 BufferedReader fromClient = new BufferedReader(new InputStreamReader(fromClientSocket.getInputStream()));
                 String line = fromClient.readLine();
@@ -40,8 +37,9 @@ public class ProxyHandler implements Runnable {
             } catch (IOException ignored) {
                 System.out.println("nope");
             }
-        }
+        //}
     }
+
     //1331,dom,ENG
     private void clientService(int clientPort, String data, String langCode) throws IOException {
         System.out.println("Greetings mr. client!");

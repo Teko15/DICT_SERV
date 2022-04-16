@@ -1,5 +1,6 @@
 package LangServer;
 
+import _Misc.ImportantData;
 import _Misc.ProxyInfo;
 
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LangServer {
-    final static int PROXY_PORT = 1234;
 
     private static Map<String, String> dictionary = new HashMap<>();
 
@@ -23,16 +23,15 @@ public class LangServer {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 2)
-            System.exit(13);
-        int port = Integer.parseInt(args[0]);
-        String langCode = args[1];
+        checkErrors(args);
+
+        String langCode = args[0];
+        int port = ImportantData.LANGUAGES_AND_PORTS.get(langCode);
         ProxyInfo proxyInfo = ProxyInfo.LangServer;
-
-
         addToMapDictionary(langCode);
         setDictionary(dictionary);
-        Socket toProxySocket = new Socket("localhost", PROXY_PORT);
+
+        Socket toProxySocket = new Socket("localhost", ImportantData.PROXY_PORT);
         PrintWriter toProxyServer = new PrintWriter(toProxySocket.getOutputStream(), true);
         String toSend = proxyInfo + "," + port + "," + langCode;
         System.out.println(toSend);
@@ -57,40 +56,14 @@ public class LangServer {
         }
     }
 
-
-}
-/*
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-public class LangServer {
-    Map<String, String> dictionary = new HashMap<>();
-
-    public LangServer(String nameFile, int port) throws IOException {
-        addToMapDictionary(System.getProperty("user.dir") + "\\Languages\\" + nameFile.toUpperCase() + ".txt");
-        Socket clientSocket = new Socket();
-        ServerSocket serverSocket = new ServerSocket(101);
-        System.out.println(serverSocket.getInetAddress());
-
-        ExecutorService threadPool = Executors.newFixedThreadPool(3);
-        while (true) {
-            threadPool.submit(new TCPHandler(serverSocket.accept(), 2));
+    private static void checkErrors(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Invalid number of parameters!");
+            System.exit(255);
+        }
+        if (ImportantData.LANGUAGES_AND_PORTS.get(args[0]) == null) {
+            System.out.println("Unknown language code!");
+            System.exit(args[0].length());
         }
     }
-
-
-
-    public String translate(String polishWord) {
-        String translatedWord = dictionary.get(polishWord.toLowerCase());
-        return translatedWord == null ? "Podane slowo nie istnieje w slowniku" : translatedWord;
-    }
-
 }
-
-* */
