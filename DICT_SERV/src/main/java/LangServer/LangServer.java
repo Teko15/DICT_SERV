@@ -38,8 +38,10 @@ public class LangServer {
         toProxyServer.println(toSend);
 
         ServerSocket serverSocket = new ServerSocket(port);
-        Socket toClientSocket = serverSocket.accept();
-        new Thread(new LangServerHandler(toClientSocket)).start();
+        while (true) {
+            Socket toClientSocket = serverSocket.accept();
+            new Thread(new LangServerHandler(toClientSocket)).start();
+        }
     }
 
     private static void addToMapDictionary(String langCode) {

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class LangServerHandler implements Runnable {
 
@@ -19,6 +20,7 @@ public class LangServerHandler implements Runnable {
                 BufferedReader fromProxyServer = new BufferedReader(new InputStreamReader(fromProxySocket.getInputStream()));
                 String line = fromProxyServer.readLine();
                 String[] fromProxyInfo = line.split(",");
+                System.out.println(Arrays.toString(fromProxyInfo));
                 String output = LangServer.getDictionary().get(fromProxyInfo[0]);
                 if (output == null)
                     output = "unknown word";

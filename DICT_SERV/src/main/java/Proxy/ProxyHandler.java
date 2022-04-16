@@ -14,8 +14,9 @@ public class ProxyHandler implements Runnable {
 
     @Override
     public void run() {
-      //  while (true) {
+        while (true) {
             try {
+                System.out.println("Greetings");
                 BufferedReader fromClient = new BufferedReader(new InputStreamReader(fromClientSocket.getInputStream()));
                 String line = fromClient.readLine();
                 System.out.println(line);
@@ -37,7 +38,7 @@ public class ProxyHandler implements Runnable {
             } catch (IOException ignored) {
                 System.out.println("nope");
             }
-        //}
+        }
     }
 
     //1331,dom,ENG
@@ -49,6 +50,7 @@ public class ProxyHandler implements Runnable {
             PrintWriter toProxyServer = new PrintWriter(toClientSocket.getOutputStream(), true);
             toProxyServer.println("Invalid server (" + langCode + ")");
         } else {
+            System.out.println(data + "," + clientPort);
             Socket toLangServerSocket = new Socket("localhost", Proxy.langServerCodeAndPort.get(langCode));
             PrintWriter toLangServer = new PrintWriter(toLangServerSocket.getOutputStream(), true);
             //dom,1331
