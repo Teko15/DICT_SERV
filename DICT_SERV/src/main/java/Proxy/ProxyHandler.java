@@ -2,7 +2,10 @@ package Proxy;
 
 import _Misc.ProxyInfo;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ProxyHandler implements Runnable {
@@ -16,10 +19,8 @@ public class ProxyHandler implements Runnable {
     public void run() {
         while (true) {
             try {
-                System.out.println("Greetings");
                 BufferedReader fromClient = new BufferedReader(new InputStreamReader(fromClientSocket.getInputStream()));
                 String line = fromClient.readLine();
-                System.out.println(line);
                 String[] receivedInfo = line.split(",");
                 ProxyInfo receivedProxyInfo = ProxyInfo.valueOf(receivedInfo[0]);
                 int receivedPort = Integer.parseInt(receivedInfo[1]);
@@ -28,38 +29,39 @@ public class ProxyHandler implements Runnable {
                 if (receivedInfo.length == 4)
                     langCode = receivedInfo[3];
                 switch (receivedProxyInfo) {
-                    //Client,1331,dom,ENG
                     case Client -> clientService(receivedPort, receivedData, langCode);
-                    //LangServer,12,ENG
                     case LangServer -> langServerService(receivedPort, receivedData);
-                    default -> System.out.println("Unknown server kek");
+                    default -> {
+                        System.out.print("Greetings! Thanks for not stealing our data ❤");
+                        System.exit(-1163383400);
+                    }
                 }
 
             } catch (IOException ignored) {
-                System.out.println("nope");
+                System.out.print("Connection failed - Proxy went home or something");
+                System.exit(-106254429);
             }
         }
     }
 
-    //1331,dom,ENG
     private void clientService(int clientPort, String data, String langCode) throws IOException {
-        System.out.println("Greetings mr. client!");
-        System.out.println(Proxy.langServerCodeAndPort);
+        System.out.println("Greetings mr. " + clientPort + ".Client");
         if (Proxy.langServerCodeAndPort.get(langCode) == null) {
             Socket toClientSocket = new Socket("localhost", clientPort);
             PrintWriter toProxyServer = new PrintWriter(toClientSocket.getOutputStream(), true);
-            toProxyServer.println("Invalid server (" + langCode + ")");
+            if (langCode.equals(""))
+                toProxyServer.println("Unknown command");
+            else
+                toProxyServer.println("Invalid server (" + langCode + ")");
         } else {
-            System.out.println(data + "," + clientPort);
             Socket toLangServerSocket = new Socket("localhost", Proxy.langServerCodeAndPort.get(langCode));
             PrintWriter toLangServer = new PrintWriter(toLangServerSocket.getOutputStream(), true);
-            //dom,1331
             toLangServer.println(data + "," + clientPort);
         }
     }
 
     private void langServerService(int langServerPort, String langCode) {
-        System.out.println("Greetings mr. server " + langCode + "!");
+        System.out.println("Greetings mr. " + langCode + ".LangServ");
         Proxy.langServerCodeAndPort.put(langCode, langServerPort);
     }
 }
